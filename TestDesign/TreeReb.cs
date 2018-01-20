@@ -75,6 +75,8 @@ namespace TestDesign
         private TreeNode selectNode1; //для хранения выделенного узла дерева 
         private TreeNode selectNode2;
 
+        private static string[] treeValues = new string[5]; //массив значений для формы редактирования EditTreeForm
+
         // определение статического контрола для добавления его на основную форму
         private static TreeReb _treeReb;
         public static TreeReb TreeRebuild
@@ -188,6 +190,7 @@ namespace TestDesign
         private void editButton_Click(object sender, EventArgs e)
         {
             EditTreeForm.EditTree.Show();
+            EditTreeForm.EditTreeFormFill(treeValues);
         }
 
         private void nextButton_Click(object sender, EventArgs e)
@@ -457,7 +460,6 @@ namespace TestDesign
                     childNode.Tag = dr["ID"];
                     FillTreeNode(childNode, data);
                 }
-
             }
             catch (Exception ex) { }
         }
@@ -465,14 +467,15 @@ namespace TestDesign
         // 6. построение datagridview на основе выделенного значения в treeview
         private void DataGridBuild(object sender, TreeViewEventArgs e, bool choice)
         {
-            DataTable table = new DataTable();
+            DataTable table;
             if (choice)
             {
                 table = dt1.Select($"ID = '{e.Node.Tag.ToString()}'").CopyToDataTable();
                 table.Columns.Remove("lvl");
 
-                dataGridView1.DataSource = table;
-                //dataGridView1.RowHeadersVisible = false;
+                dataGridView1.DataSource = table; //dataGridView1.RowHeadersVisible = false;
+
+                MassifForEditTreeFormFill(table);
             }
             else
             {
@@ -483,5 +486,16 @@ namespace TestDesign
             }
         }
 
+        // 7. заполнение массива, хранящего значения полей записи дерева, для передачи его в форму редактирования
+        private void MassifForEditTreeFormFill(DataTable table)
+        {
+            DataRow[] row;
+            row = table.Select();
+            treeValues[0] = row[0]["ID"].ToString();
+            treeValues[1] = row[0]["ParentID"].ToString();
+            treeValues[2] = row[0]["FullValue"].ToString();
+            treeValues[3] = "ident";
+            treeValues[4] = row[0]["LevelAddr"].ToString(); 
+        }
     }
 }

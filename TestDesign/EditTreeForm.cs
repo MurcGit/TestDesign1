@@ -233,5 +233,16 @@ namespace TestDesign
             this.levelTextBox.Focus();
         }
         #endregion
+
+        // методы \\
+        // 1. Заполнение полей формы редактирования
+        public static void EditTreeFormFill(string[] treeValues)
+        {
+            EditTree.idTextBox.Text = treeValues[0];
+            EditTree.parentIdTextBox.Text = treeValues[1];
+            EditTree.valueTextBox.Text = treeValues[2];
+            EditTree.identTextBox.Text = treeValues[3];
+            EditTree.levelTextBox.Text = treeValues[4];
+        }
     }
 }
