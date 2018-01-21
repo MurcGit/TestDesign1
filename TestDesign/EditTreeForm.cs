@@ -40,6 +40,7 @@ namespace TestDesign
         // 1. закрыть
         private void closeBut_Click(object sender, EventArgs e)
         {
+            this.clearAllButton_Click(sender, e);
             this.Hide();
             this.CenterToScreen();
         }
@@ -63,8 +64,7 @@ namespace TestDesign
         // 4. отмена
         private void cancelButton_Click(object sender, EventArgs e)
         {
-            this.Hide();
-            this.CenterToScreen();
+            this.closeBut_Click(sender, e);
         }
 
         // 5. сохранить

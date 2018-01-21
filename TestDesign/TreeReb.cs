@@ -177,22 +177,29 @@ namespace TestDesign
             treeView1.Refresh();
         }
 
+        // 4. удаление узла
         private void removeButton_Click(object sender, EventArgs e)
         {
 
         }
 
+        // 5. добавление узла
         private void addButton_Click(object sender, EventArgs e)
         {
 
         }
 
+        // 6. редактирование узла
         private void editButton_Click(object sender, EventArgs e)
         {
             EditTreeForm.EditTree.Show();
-            EditTreeForm.EditTreeFormFill(treeValues);
+            if (this.treeView1.Nodes.Count > 0 || this.treeView2.Nodes.Count > 0)
+            {
+                EditTreeForm.EditTreeFormFill(treeValues);
+            }
         }
 
+        // 7. вперед
         private void nextButton_Click(object sender, EventArgs e)
         {
             if (this.treeView1.SelectedNode != null)
@@ -207,6 +214,7 @@ namespace TestDesign
             }
         }
 
+        // 8. назад
         private void backButton_Click(object sender, EventArgs e)
         {
             if (this.treeView1.SelectedNode != null)
@@ -221,6 +229,7 @@ namespace TestDesign
             }
         }
 
+        // 9. инфо
         private void infoButton_Click(object sender, EventArgs e)
         {
 
@@ -302,7 +311,7 @@ namespace TestDesign
                 TreeRebuild.treeView1.Focus();
                 TreeRebuild.treeView2.Focus();
                 TreeRebuild.treeView1.Focus(); 
-                //TreeRebuild.panel2.Width = TreeRebuild.Width;
+                //TreeRebuild.panel2.Width = TreeRebuild.Width; // если в treeview для правки ничего, а в treeview2 есть, то фокус на 2
             }
             else
             {
@@ -483,6 +492,7 @@ namespace TestDesign
                 table.Columns.Remove("lvl");
 
                 dataGridView2.DataSource = table;
+                MassifForEditTreeFormFill(table);
             }
         }
 
