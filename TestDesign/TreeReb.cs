@@ -17,26 +17,27 @@ namespace TestDesign
     {
         // создание переменных для подключения к базе и для SQL запроса
         #region Код ADO
-        private const string conString = @"Server=DESKTOP-PCECLDC\SQLEXPRESS; Initial Catalog=Sample; Integrated Security=True; Pooling=True; Connection Timeout=60;";
+        private const string conString = @"Server=virt30; Initial Catalog=ForAnalysts; Integrated Security=True; Pooling=True; Connection Timeout=60;";
         private const string conStringInDll = "context connection=true";
 
         private const string withCTE = @"IF OBJECT_ID ('tempdb..#TreeBuild') is not null DROP TABLE #TreeBuild;
                                             with CTE as 
-                                            ( select * ";
+                                            ( select ID, ParentID, [Value], Ident, LevelAddr as [Level] ";
         private const string asLVL0 = ",0 as lvl ";
-        private const string fromDBO = "from [dbo].[AddressTree] (nolock) where ";
+        private const string fromDBO = "from prs.AddressTreeSmallTest (nolock) where ";
         private const string ifValue = "[Value] ";
         private static string sqlValue = "";
         private const string andIdent = " and [Ident] = '";
         private static string sqlIdent = "";
         private const string sqlApostrof = "'";
         private const string unionAll = @" union all
-                                            select Adt.* ";
+                                            select Adt.ID, Adt.ParentID, Adt.[Value], Adt.Ident, Adt.LevelAddr as [Level] ";
         private const string asLVL1 = ",1 as lvl ";
-        private const string fromAdt = @"from [dbo].[AddressTree] as Adt (nolock)
+        private const string fromAdt = @"from prs.AddressTreeSmallTest as Adt (nolock)
                                             inner join CTE as c1 on Adt.ParentID = c1.ID
                                             )
-                                            select ID, ParentID, [Value] + ' ' + [Ident] + '||' + cast(LevelAddr as varchar(1)) as FullValue, LevelAddr ";
+                                            select ID, ParentID, [Value], Ident
+                                            , [Value] + ' ' + [Ident] + ' (level: ' + cast([Level] as varchar(1)) + ')' as FullValue, [Level] ";
         private const string LVL01 = ",lvl ";
         private const string LVLforInto = ",0 as lvl ";
         private const string intoTree = "into #TreeBuild ";
@@ -47,16 +48,16 @@ namespace TestDesign
         private const string identLike = "and [Ident] = '";
         private static string ifIdentLike = "";
         private const string sqlApostraf1 = "'";
-        private const string orderBY = "order by [LevelAddr], [Value] ";
+        private const string orderBY = "order by [Level], [Value] ";
         private const string nextOTB = @";WITH OTB
                                             AS
                                             (
-	                                        select ID, ParentID, FullValue, LevelAddr, lvl from #TreeBuild
+	                                        select ID, ParentID, [Value], Ident, FullValue, [Level], lvl from #TreeBuild
 	                                        UNION all
-	                                        select Adt.ID, Adt.ParentID, 
-                                                Adt.[Value] + ' ' + Adt.[Ident] + '||' + cast(Adt.LevelAddr as varchar(1)) as FullValue,
-                                                Adt.LevelAddr, 1 as lvl 
-                                            from [dbo].[AddressTree] as Adt (nolock)
+	                                        select Adt.ID, Adt.ParentID, Adt.[Value], Adt.[Ident]
+                                                , Adt.[Value] + ' ' + Adt.[Ident] + ' (level: ' + cast(Adt.LevelAddr as varchar(1)) + ')' as FullValue,
+                                                Adt.LevelAddr as [Level], 1 as lvl 
+                                            from prs.AddressTreeSmallTest as Adt (nolock)
 	                                        inner join OTB as c1 on Adt.ParentID = c1.ID
                                             )
                                             SELECT * FROM OTB";
@@ -480,8 +481,10 @@ namespace TestDesign
             if (choice)
             {
                 table = dt1.Select($"ID = '{e.Node.Tag.ToString()}'").CopyToDataTable();
-                table.Columns.Remove("lvl");
-
+                table = table.DefaultView.ToTable(true, "ID", "ParentID", "Value", "Ident", "Level"); //удаление дублей и лишних полей
+                //table.Columns.Remove("lvl");
+                //table.Columns.Remove("FullValue"); //MessageBox.Show(table.Rows.Count.ToString());
+                
                 dataGridView1.DataSource = table; //dataGridView1.RowHeadersVisible = false;
 
                 MassifForEditTreeFormFill(table);
@@ -489,7 +492,9 @@ namespace TestDesign
             else
             {
                 table = dt2.Select($"ID = '{e.Node.Tag.ToString()}'").CopyToDataTable();
-                table.Columns.Remove("lvl");
+                table = table.DefaultView.ToTable(true, "ID", "ParentID", "Value", "Ident", "Level");
+                //table.Columns.Remove("lvl");
+                //table.Columns.Remove("FullValue");
 
                 dataGridView2.DataSource = table;
                 MassifForEditTreeFormFill(table);
@@ -503,9 +508,9 @@ namespace TestDesign
             row = table.Select();
             treeValues[0] = row[0]["ID"].ToString();
             treeValues[1] = row[0]["ParentID"].ToString();
-            treeValues[2] = row[0]["FullValue"].ToString();
-            treeValues[3] = "ident";
-            treeValues[4] = row[0]["LevelAddr"].ToString(); 
+            treeValues[2] = row[0]["Value"].ToString();
+            treeValues[3] = row[0]["Ident"].ToString();
+            treeValues[4] = row[0]["Level"].ToString(); 
         }
     }
 }

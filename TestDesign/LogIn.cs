@@ -14,8 +14,8 @@ namespace TestDesign
 {
     public partial class LogIn : Form
     {
-        private const string conString = @"Server=DESKTOP-PCECLDC\SQLEXPRESS; Initial Catalog=Sample; Integrated Security=True; Pooling=True; Connection Timeout=60;";
-        private const string sqlQuery = @"Select Username, UserPassword from UserLogin";
+        private const string conString = @"Server=virt30; Initial Catalog=ForAnalysts; Integrated Security=True; Pooling=True; Connection Timeout=60;";
+        private const string sqlQuery = @"Select Username, UserPassword from prs.UserLoginTest";
         private List<UserLogin> userLog;
 
         private bool draging = false;
